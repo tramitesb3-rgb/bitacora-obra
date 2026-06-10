@@ -1,0 +1,1396 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F2ED;
+    --surface: #FFFFFF;
+    --surface2: #F0EDE8;
+    --ink: #1A1814;
+    --ink2: #6B6760;
+    --ink3: #A8A5A0;
+    --accent: #2A4E3C;
+    --accent2: #3D7A5C;
+    --accent-light: #E3EDE8;
+    --danger: #C04A30;
+    --warn: #B87A20;
+    --border: rgba(26,24,20,0.1);
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+    --radius: 12px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--accent);
+    color: #fff;
+    padding: 14px 16px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-title { font-size: 16px; font-weight: 700; letter-spacing: 0.04em; }
+  .header-sub { font-family: var(--mono); font-size: 10px; opacity: 0.6; margin-top: 1px; }
+  .header-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+  }
+
+  /* ── NAV TABS ── */
+  .nav {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    flex: 1;
+    min-width: 60px;
+    padding: 10px 8px;
+    border: none;
+    background: none;
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--ink3);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-tab i { font-size: 18px; }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── VIEWS ── */
+  .view { display: none; padding: 16px; }
+  .view.active { display: block; }
+
+  /* ── OBRA SELECTOR ── */
+  .obra-selector {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .obra-selector label { font-family: var(--mono); font-size: 10px; color: var(--ink3); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+  .obra-selector select, .obra-selector input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    margin-bottom: 8px;
+  }
+  .btn-row { display: flex; gap: 8px; }
+  .btn {
+    flex: 1;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-secondary { background: var(--surface); color: var(--ink); }
+  .btn-danger { background: #FEF0ED; color: var(--danger); border-color: #F5C4B3; }
+  .btn:active { transform: scale(0.97); }
+
+  /* ── SECCIÓN FOTO ── */
+  .section-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .section-title { font-family: var(--mono); font-size: 10px; color: var(--ink3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .section-title i { font-size: 14px; }
+
+  .camera-area {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    border: 1.5px dashed var(--border);
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .camera-area img { width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-sm); }
+  .camera-area video { width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-sm); }
+  .camera-placeholder { color: var(--ink3); font-size: 12px; text-align: center; padding: 16px; }
+  .camera-placeholder i { font-size: 32px; display: block; margin-bottom: 6px; }
+
+  #photoInput { display: none; }
+
+  /* thumbnails */
+  .thumb-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .thumb {
+    width: 60px; height: 60px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    position: relative;
+  }
+  .thumb-wrap { position: relative; display: inline-block; }
+  .thumb-del {
+    position: absolute; top: -4px; right: -4px;
+    width: 16px; height: 16px;
+    background: var(--danger); color: #fff;
+    border-radius: 50%; border: none; cursor: pointer;
+    font-size: 10px; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── GEO ── */
+  .geo-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-light);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+  }
+  .geo-row i { font-size: 16px; flex-shrink: 0; }
+  .geo-coords { flex: 1; }
+  .geo-status { font-size: 10px; color: var(--ink3); margin-top: 2px; }
+
+  /* ── NOTAS ── */
+  textarea.nota {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 100px;
+    outline: none;
+    line-height: 1.6;
+  }
+  textarea.nota:focus { border-color: var(--accent2); }
+
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .tag {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background: var(--surface2);
+    color: var(--ink2);
+    font-family: var(--mono);
+    letter-spacing: 0.04em;
+    transition: all 0.15s;
+  }
+  .tag.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── TIMESTAMP ── */
+  .timestamp-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink3);
+    margin-bottom: 12px;
+  }
+  .timestamp-bar i { font-size: 13px; }
+
+  /* ── LOG LIST ── */
+  .log-item {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .log-item:hover { border-color: var(--accent2); }
+  .log-item-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+  .log-item-obra { font-size: 13px; font-weight: 700; color: var(--accent); }
+  .log-item-date { font-family: var(--mono); font-size: 9px; color: var(--ink3); }
+  .log-item-note { font-size: 12px; color: var(--ink2); line-height: 1.5; margin-bottom: 8px; }
+  .log-item-meta { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 9px; color: var(--ink3); }
+  .log-item-meta i { font-size: 12px; }
+  .log-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .log-tag {
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-family: var(--mono);
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ── OBRAS VIEW ── */
+  .obra-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .obra-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .obra-name { font-size: 14px; font-weight: 700; }
+  .obra-type { font-family: var(--mono); font-size: 9px; color: var(--ink3); margin-top: 2px; }
+  .obra-stats { display: flex; gap: 12px; margin-top: 10px; }
+  .obra-stat { text-align: center; }
+  .obra-stat-n { font-size: 18px; font-weight: 700; color: var(--accent); }
+  .obra-stat-l { font-family: var(--mono); font-size: 9px; color: var(--ink3); text-transform: uppercase; }
+
+  /* ── INFORME VIEW ── */
+  .informe-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .informe-obra-select {
+    width: 100%;
+    padding: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 12px;
+    outline: none;
+  }
+  .informe-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .informe-stat {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    text-align: center;
+  }
+  .informe-stat-n { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .informe-stat-l { font-family: var(--mono); font-size: 9px; color: var(--ink3); text-transform: uppercase; margin-top: 2px; }
+
+  .export-row { display: flex; gap: 8px; }
+
+  /* modal preview */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px;
+    width: 100%;
+    max-width: 380px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .modal-title { font-size: 14px; font-weight: 700; }
+  .modal-close { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--ink2); }
+  .modal-img { width: 100%; border-radius: var(--radius-sm); margin-bottom: 10px; }
+  .modal-field { margin-bottom: 8px; }
+  .modal-label { font-family: var(--mono); font-size: 9px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+  .modal-value { font-size: 13px; color: var(--ink); }
+
+  /* empty state */
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--ink3); }
+  .empty-state i { font-size: 40px; display: block; margin-bottom: 10px; }
+  .empty-state p { font-size: 13px; }
+
+  /* notification toast */
+  .toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--accent);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 300;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); display: inline-block; }
+  .dot.red { background: var(--danger); }
+  .dot.green { background: #2D7A4F; }
+
+  /* ── DRIVE PANEL ── */
+  .drive-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink2);
+  }
+  .drive-bar-status { flex: 1; display: flex; align-items: center; gap: 6px; }
+  .drive-status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ink3); flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .drive-status-dot.connected { background: #2D7A4F; }
+  .drive-status-dot.syncing { background: var(--warn); animation: pulse 1s infinite; }
+  .drive-status-dot.error { background: var(--danger); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .drive-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px 9px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .drive-btn:hover { background: var(--surface2); }
+  .drive-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .drive-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .drive-modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 400;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .drive-modal-overlay.open { display: flex; }
+  .drive-modal {
+    background: var(--surface); border-radius: var(--radius);
+    padding: 20px; width: 100%; max-width: 360px;
+  }
+  .drive-modal h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .drive-modal p { font-size: 12px; color: var(--ink2); margin-bottom: 14px; line-height: 1.6; }
+  .drive-modal input {
+    width: 100%; padding: 9px 10px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 12px; font-family: var(--mono);
+    color: var(--ink); outline: none; margin-bottom: 10px;
+  }
+  .drive-modal-actions { display: flex; gap: 8px; }
+  .drive-modal-actions button { flex: 1; }
+  .drive-help {
+    font-size: 10px; color: var(--ink3); font-family: var(--mono);
+    line-height: 1.6; margin-top: 10px; padding: 8px;
+    background: var(--surface2); border-radius: var(--radius-sm);
+  }
+  .drive-help a { color: var(--accent2); }
+</style>
+</head>
+<body>
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Bitácora de Obra – registro de visitas, fotos y notas por proyecto</h2>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title">BITÁCORA DE OBRA</div>
+    <div class="header-sub">Sistema de Registro · San Rafael</div>
+  </div>
+  <div class="header-badge" id="currentObraIndicator">Sin obra</div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-tab active" onclick="showView('registro',this)"><i class="ti ti-writing"></i>Registro</button>
+  <button class="nav-tab" onclick="showView('historial',this)"><i class="ti ti-list-details"></i>Historial</button>
+  <button class="nav-tab" onclick="showView('obras',this)"><i class="ti ti-building"></i>Obras</button>
+  <button class="nav-tab" onclick="showView('informe',this)"><i class="ti ti-report"></i>Informe</button>
+</div>
+
+<!-- DRIVE BAR -->
+<div class="drive-bar">
+  <div class="drive-bar-status">
+    <div class="drive-status-dot" id="driveDot"></div>
+    <span id="driveStatusText">Drive no configurado</span>
+  </div>
+  <button class="drive-btn" id="driveUpBtn" onclick="driveSyncUp()" disabled title="Subir a Drive">
+    <i class="ti ti-cloud-upload" style="font-size:13px;"></i> Subir
+  </button>
+  <button class="drive-btn" id="driveDownBtn" onclick="driveSyncDown()" disabled title="Bajar de Drive">
+    <i class="ti ti-cloud-download" style="font-size:13px;"></i> Bajar
+  </button>
+  <button class="drive-btn primary" onclick="openDriveConfig()" id="driveConfigBtn">
+    <i class="ti ti-settings" style="font-size:13px;"></i> Config
+  </button>
+</div>
+
+<!-- DRIVE CONFIG MODAL -->
+<div class="drive-modal-overlay" id="driveModal">
+  <div class="drive-modal">
+    <h3><i class="ti ti-brand-google-drive" style="color:#4285f4;margin-right:6px;"></i>Conectar Google Drive</h3>
+    <p>Ingresá tu API Key y el ID de la carpeta de Drive donde se guardará la bitácora. Los datos se guardan como <strong>bitacora_obra.json</strong>.</p>
+    
+    <label style="font-family:var(--mono);font-size:9px;color:var(--ink3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.08em;">API Key de Google</label>
+    <input type="password" id="driveApiKey" placeholder="AIzaSy..." autocomplete="off">
+    
+    <label style="font-family:var(--mono);font-size:9px;color:var(--ink3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.08em;">OAuth Client ID</label>
+    <input type="text" id="driveClientId" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off">
+    
+    <label style="font-family:var(--mono);font-size:9px;color:var(--ink3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.08em;">ID de carpeta en Drive (opcional)</label>
+    <input type="text" id="driveFolderId" placeholder="Dejar vacío para raíz de My Drive">
+
+    <div class="drive-modal-actions">
+      <button class="btn btn-secondary" onclick="closeDriveModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveDriveConfig()"><i class="ti ti-check"></i> Guardar y conectar</button>
+    </div>
+
+    <div class="drive-help">
+      <strong>Cómo obtener las credenciales:</strong><br>
+      1. Ir a <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a><br>
+      2. Crear proyecto → Habilitar <em>Google Drive API</em><br>
+      3. Crear credenciales → API Key (para leer) y OAuth 2.0 Client ID (tipo Web, con <code>http://localhost</code> y la URL de este archivo en orígenes autorizados)<br>
+      4. El <strong>ID de carpeta</strong> es la última parte de la URL de Drive al abrir la carpeta
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ VIEW: REGISTRO ══════════════ -->
+<div class="view active" id="view-registro">
+
+  <!-- Obra selector -->
+  <div class="obra-selector">
+    <label>Obra activa</label>
+    <select id="obraSelect" onchange="selectObra()">
+      <option value="">— Seleccionar obra —</option>
+    </select>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="showView('obras', document.querySelector('.nav-tab:nth-child(3)'))">
+        <i class="ti ti-plus"></i> Nueva obra
+      </button>
+    </div>
+  </div>
+
+  <!-- Timestamp -->
+  <div class="timestamp-bar">
+    <i class="ti ti-clock"></i>
+    <span id="liveTime"></span>
+    <span class="dot green"></span>
+    <span>En vivo</span>
+  </div>
+
+  <!-- Geolocalización -->
+  <div class="section-card">
+    <div class="section-title"><i class="ti ti-map-pin"></i>Geolocalización</div>
+    <div class="geo-row" id="geoRow">
+      <i class="ti ti-loader" id="geoIcon"></i>
+      <div class="geo-coords">
+        <div id="geoLat">Obteniendo posición...</div>
+        <div class="geo-status" id="geoStatus">Iniciando GPS</div>
+      </div>
+      <button class="btn btn-secondary" style="flex-shrink:0;padding:6px 10px;font-size:11px;" onclick="getGeo()">
+        <i class="ti ti-refresh"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Fotografía -->
+  <div class="section-card">
+    <div class="section-title"><i class="ti ti-camera"></i>Fotografía</div>
+    <div class="camera-area" id="cameraArea" onclick="document.getElementById('photoInput').click()">
+      <div class="camera-placeholder">
+        <i class="ti ti-camera"></i>
+        Tomar foto o seleccionar imagen
+      </div>
+    </div>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" multiple onchange="handlePhotos(event)">
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="document.getElementById('photoInput').click()">
+        <i class="ti ti-camera"></i>Cámara
+      </button>
+      <button class="btn btn-secondary" onclick="document.getElementById('photoInput').click()">
+        <i class="ti ti-photo"></i>Galería
+      </button>
+    </div>
+    <div class="thumb-row" id="thumbRow"></div>
+  </div>
+
+  <!-- Notas -->
+  <div class="section-card">
+    <div class="section-title"><i class="ti ti-note"></i>Nota de visita</div>
+    <textarea class="nota" id="notaText" placeholder="Descripción del estado de obra, avances, novedades, observaciones técnicas..."></textarea>
+    <div class="tag-row">
+      <button class="tag" onclick="toggleTag(this,'Avance')">Avance</button>
+      <button class="tag" onclick="toggleTag(this,'Inspección')">Inspección</button>
+      <button class="tag" onclick="toggleTag(this,'Incidencia')">Incidencia</button>
+      <button class="tag" onclick="toggleTag(this,'Materiales')">Materiales</button>
+      <button class="tag" onclick="toggleTag(this,'Estructura')">Estructura</button>
+      <button class="tag" onclick="toggleTag(this,'Instalaciones')">Instalaciones</button>
+      <button class="tag" onclick="toggleTag(this,'Documentación')">Documentación</button>
+      <button class="tag" onclick="toggleTag(this,'Reunión')">Reunión</button>
+    </div>
+  </div>
+
+  <!-- Guardar -->
+  <button class="btn btn-primary" style="width:100%;padding:13px;font-size:14px;margin-bottom:24px;" onclick="guardarRegistro()">
+    <i class="ti ti-device-floppy"></i>Guardar registro de visita
+  </button>
+</div>
+
+<!-- ══════════════ VIEW: HISTORIAL ══════════════ -->
+<div class="view" id="view-historial">
+  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;">
+    <select id="filtroObra" style="flex:1;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--sans);font-size:12px;color:var(--ink);outline:none;" onchange="renderHistorial()">
+      <option value="">Todas las obras</option>
+    </select>
+    <button class="btn btn-secondary" style="flex-shrink:0;padding:8px 10px;" onclick="renderHistorial()"><i class="ti ti-refresh"></i></button>
+  </div>
+  <div id="historialList"></div>
+</div>
+
+<!-- ══════════════ VIEW: OBRAS ══════════════ -->
+<div class="view" id="view-obras">
+  <div class="section-card">
+    <div class="section-title"><i class="ti ti-building-plus"></i>Nueva obra</div>
+    <label style="font-family:var(--mono);font-size:10px;color:var(--ink3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Nombre / Dirección</label>
+    <input type="text" id="obraNombre" placeholder="Ej: Edificio Mitre 450" style="width:100%;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--sans);font-size:13px;color:var(--ink);outline:none;margin-bottom:8px;">
+    <label style="font-family:var(--mono);font-size:10px;color:var(--ink3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Tipo de obra</label>
+    <select id="obraTipo" style="width:100%;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--sans);font-size:13px;color:var(--ink);outline:none;margin-bottom:8px;">
+      <option>Vivienda unifamiliar</option>
+      <option>Edificio residencial</option>
+      <option>Equipamiento público</option>
+      <option>Infraestructura</option>
+      <option>Comercial</option>
+      <option>Industrial</option>
+      <option>Intervención territorial</option>
+      <option>Otro</option>
+    </select>
+    <label style="font-family:var(--mono);font-size:10px;color:var(--ink3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Comitente / Propietario</label>
+    <input type="text" id="obraComitente" placeholder="Nombre del comitente" style="width:100%;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--sans);font-size:13px;color:var(--ink);outline:none;margin-bottom:8px;">
+    <label style="font-family:var(--mono);font-size:10px;color:var(--ink3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Expediente / Número</label>
+    <input type="text" id="obraExpediente" placeholder="Nro. de expediente municipal" style="width:100%;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--sans);font-size:13px;color:var(--ink);outline:none;margin-bottom:12px;">
+    <button class="btn btn-primary" style="width:100%;" onclick="crearObra()"><i class="ti ti-plus"></i>Crear obra</button>
+  </div>
+
+  <div id="obrasList"></div>
+</div>
+
+<!-- ══════════════ VIEW: INFORME ══════════════ -->
+<div class="view" id="view-informe">
+  <div class="informe-card">
+    <div class="section-title"><i class="ti ti-report-analytics"></i>Generar informe</div>
+    <select class="informe-obra-select" id="informeObra" onchange="actualizarInforme()">
+      <option value="">Todas las obras</option>
+    </select>
+    <div class="informe-stat-grid" id="informeStats">
+      <div class="informe-stat"><div class="informe-stat-n" id="statVisitas">0</div><div class="informe-stat-l">Visitas</div></div>
+      <div class="informe-stat"><div class="informe-stat-n" id="statFotos">0</div><div class="informe-stat-l">Fotografías</div></div>
+      <div class="informe-stat"><div class="informe-stat-n" id="statObras">0</div><div class="informe-stat-l">Obras</div></div>
+      <div class="informe-stat"><div class="informe-stat-n" id="statDias">0</div><div class="informe-stat-l">Días</div></div>
+    </div>
+    <div class="export-row">
+      <button class="btn btn-primary" style="flex:1;" onclick="exportarJSON()"><i class="ti ti-download"></i>Exportar JSON</button>
+      <button class="btn btn-secondary" style="flex:1;" onclick="exportarTexto()"><i class="ti ti-file-text"></i>Exportar TXT</button>
+    </div>
+    <div style="margin-top:8px;">
+      <button class="btn btn-secondary" style="width:100%;" id="driveExportBtn" onclick="driveSyncUp()" disabled>
+        <i class="ti ti-brand-google-drive"></i> Subir informe a Drive
+      </button>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><i class="ti ti-timeline"></i>Resumen cronológico</div>
+    <div id="cronologiaList"></div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Detalle de visita</div>
+      <button class="modal-close" onclick="closeModalDirect()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────
+let state = {
+  obras: [],
+  registros: [],
+  currentObra: null,
+  currentPhotos: [],
+  currentGeo: null,
+  activeTags: []
+};
+
+// Load from localStorage
+function loadState() {
+  try {
+    const s = localStorage.getItem('bitacora_obra_v1');
+    if (s) { const parsed = JSON.parse(s); Object.assign(state, parsed); }
+  } catch(e) {}
+}
+
+function saveState() {
+  try { localStorage.setItem('bitacora_obra_v1', JSON.stringify(state)); } catch(e) {}
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+loadState();
+populateSelects();
+renderObrasList();
+renderHistorial();
+actualizarInforme();
+startClock();
+getGeo();
+
+// ─── CLOCK ────────────────────────────────────────────────
+function startClock() {
+  function tick() {
+    const now = new Date();
+    const d = now.toLocaleDateString('es-AR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+    const t = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    document.getElementById('liveTime').textContent = d + ' · ' + t;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ─── GEO ──────────────────────────────────────────────────
+function getGeo() {
+  const icon = document.getElementById('geoIcon');
+  const lat = document.getElementById('geoLat');
+  const status = document.getElementById('geoStatus');
+  icon.className = 'ti ti-loader';
+  lat.textContent = 'Obteniendo posición...';
+  status.textContent = 'Consultando GPS';
+
+  if (!navigator.geolocation) {
+    lat.textContent = 'GPS no disponible';
+    status.textContent = 'Dispositivo sin soporte';
+    icon.className = 'ti ti-map-pin-off';
+    state.currentGeo = { lat: -34.6, lng: -68.3, acc: null, mock: true };
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude, longitude, accuracy } = pos.coords;
+      state.currentGeo = { lat: latitude, lng: longitude, acc: Math.round(accuracy) };
+      lat.textContent = latitude.toFixed(6) + ', ' + longitude.toFixed(6);
+      status.textContent = 'Precisión: ±' + Math.round(accuracy) + ' m · ' + new Date(pos.timestamp).toLocaleTimeString('es-AR');
+      icon.className = 'ti ti-map-pin';
+    },
+    err => {
+      // Use approximate for San Rafael if permission denied
+      state.currentGeo = { lat: -34.6177, lng: -68.3301, acc: null, mock: true };
+      lat.textContent = '-34.617700, -68.330100';
+      status.textContent = 'Posición aproximada (permiso denegado)';
+      icon.className = 'ti ti-map-pin-exclamation';
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+// ─── PHOTOS ───────────────────────────────────────────────
+function handlePhotos(event) {
+  const files = Array.from(event.target.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      state.currentPhotos.push(e.target.result);
+      renderThumbs();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderThumbs() {
+  const row = document.getElementById('thumbRow');
+  const area = document.getElementById('cameraArea');
+  row.innerHTML = '';
+
+  state.currentPhotos.forEach((src, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'thumb-wrap';
+    const img = document.createElement('img');
+    img.className = 'thumb';
+    img.src = src;
+    const del = document.createElement('button');
+    del.className = 'thumb-del';
+    del.innerHTML = '×';
+    del.onclick = (e) => { e.stopPropagation(); state.currentPhotos.splice(i, 1); renderThumbs(); };
+    wrap.appendChild(img);
+    wrap.appendChild(del);
+    row.appendChild(wrap);
+  });
+
+  if (state.currentPhotos.length > 0) {
+    area.innerHTML = '<img src="' + state.currentPhotos[state.currentPhotos.length - 1] + '">';
+  } else {
+    area.innerHTML = '<div class="camera-placeholder"><i class="ti ti-camera"></i>Tomar foto o seleccionar imagen</div>';
+  }
+}
+
+// ─── TAGS ─────────────────────────────────────────────────
+function toggleTag(btn, tag) {
+  const idx = state.activeTags.indexOf(tag);
+  if (idx === -1) { state.activeTags.push(tag); btn.classList.add('active'); }
+  else { state.activeTags.splice(idx, 1); btn.classList.remove('active'); }
+}
+
+// ─── OBRAS ────────────────────────────────────────────────
+function crearObra() {
+  const nombre = document.getElementById('obraNombre').value.trim();
+  if (!nombre) { toast('Ingresá el nombre de la obra'); return; }
+  const obra = {
+    id: Date.now().toString(),
+    nombre,
+    tipo: document.getElementById('obraTipo').value,
+    comitente: document.getElementById('obraComitente').value.trim(),
+    expediente: document.getElementById('obraExpediente').value.trim(),
+    fecha: new Date().toISOString()
+  };
+  state.obras.push(obra);
+  saveState();
+  populateSelects();
+  renderObrasList();
+  document.getElementById('obraNombre').value = '';
+  document.getElementById('obraComitente').value = '';
+  document.getElementById('obraExpediente').value = '';
+  toast('Obra "' + nombre + '" creada');
+}
+
+function selectObra() {
+  const id = document.getElementById('obraSelect').value;
+  state.currentObra = id;
+  const obra = state.obras.find(o => o.id === id);
+  document.getElementById('currentObraIndicator').textContent = obra ? obra.nombre.slice(0, 18) + (obra.nombre.length > 18 ? '…' : '') : 'Sin obra';
+}
+
+function renderObrasList() {
+  const el = document.getElementById('obrasList');
+  if (!state.obras.length) {
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-building-off"></i><p>No hay obras registradas</p></div>';
+    return;
+  }
+  el.innerHTML = state.obras.map(o => {
+    const regs = state.registros.filter(r => r.obraId === o.id);
+    const fotos = regs.reduce((acc, r) => acc + (r.fotos ? r.fotos.length : 0), 0);
+    return `<div class="obra-card">
+      <div class="obra-card-header">
+        <div>
+          <div class="obra-name">${o.nombre}</div>
+          <div class="obra-type">${o.tipo}${o.comitente ? ' · ' + o.comitente : ''}${o.expediente ? ' · Exp. ' + o.expediente : ''}</div>
+        </div>
+        <button class="btn btn-danger" style="padding:4px 8px;font-size:10px;flex:none;" onclick="eliminarObra('${o.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+      <div class="obra-stats">
+        <div class="obra-stat"><div class="obra-stat-n">${regs.length}</div><div class="obra-stat-l">Visitas</div></div>
+        <div class="obra-stat"><div class="obra-stat-n">${fotos}</div><div class="obra-stat-l">Fotos</div></div>
+        <div class="obra-stat"><div class="obra-stat-n">${new Date(o.fecha).toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit'})}</div><div class="obra-stat-l">Inicio</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function eliminarObra(id) {
+  if (!confirm('¿Eliminar esta obra y todos sus registros?')) return;
+  state.obras = state.obras.filter(o => o.id !== id);
+  state.registros = state.registros.filter(r => r.obraId !== id);
+  if (state.currentObra === id) state.currentObra = null;
+  saveState();
+  populateSelects();
+  renderObrasList();
+  renderHistorial();
+  toast('Obra eliminada');
+}
+
+function populateSelects() {
+  const opts = '<option value="">— Seleccionar obra —</option>' +
+    state.obras.map(o => `<option value="${o.id}">${o.nombre}</option>`).join('');
+  document.getElementById('obraSelect').innerHTML = opts;
+  if (state.currentObra) document.getElementById('obraSelect').value = state.currentObra;
+
+  const optsF = '<option value="">Todas las obras</option>' +
+    state.obras.map(o => `<option value="${o.id}">${o.nombre}</option>`).join('');
+  document.getElementById('filtroObra').innerHTML = optsF;
+  document.getElementById('informeObra').innerHTML = optsF;
+}
+
+// ─── GUARDAR REGISTRO ─────────────────────────────────────
+function guardarRegistro() {
+  if (!state.currentObra) { toast('Seleccioná una obra primero'); return; }
+  const nota = document.getElementById('notaText').value.trim();
+  if (!nota && state.currentPhotos.length === 0) { toast('Agregá una foto o nota'); return; }
+
+  const obra = state.obras.find(o => o.id === state.currentObra);
+  const registro = {
+    id: Date.now().toString(),
+    obraId: state.currentObra,
+    obraNombre: obra ? obra.nombre : '',
+    fecha: new Date().toISOString(),
+    geo: state.currentGeo ? { ...state.currentGeo } : null,
+    nota,
+    fotos: [...state.currentPhotos],
+    tags: [...state.activeTags]
+  };
+
+  state.registros.unshift(registro);
+  saveState();
+
+  // Reset form
+  state.currentPhotos = [];
+  state.activeTags = [];
+  document.getElementById('notaText').value = '';
+  document.querySelectorAll('.tag.active').forEach(t => t.classList.remove('active'));
+  renderThumbs();
+  renderHistorial();
+  actualizarInforme();
+  toast('Registro guardado ✓');
+}
+
+// ─── HISTORIAL ────────────────────────────────────────────
+function renderHistorial() {
+  const el = document.getElementById('historialList');
+  const filtro = document.getElementById('filtroObra').value;
+  const regs = filtro ? state.registros.filter(r => r.obraId === filtro) : state.registros;
+
+  if (!regs.length) {
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-clipboard-off"></i><p>No hay registros aún</p></div>';
+    return;
+  }
+
+  el.innerHTML = regs.map(r => {
+    const d = new Date(r.fecha);
+    const fechaStr = d.toLocaleDateString('es-AR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+    const horaStr = d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    const tagsHTML = r.tags && r.tags.length ? '<div class="log-tags">' + r.tags.map(t => `<span class="log-tag">${t}</span>`).join('') + '</div>' : '';
+    return `<div class="log-item" onclick="verDetalle('${r.id}')">
+      <div class="log-item-header">
+        <div class="log-item-obra">${r.obraNombre}</div>
+        <div class="log-item-date">${fechaStr}<br>${horaStr}</div>
+      </div>
+      ${r.nota ? `<div class="log-item-note">${r.nota.slice(0, 120)}${r.nota.length > 120 ? '…' : ''}</div>` : ''}
+      <div class="log-item-meta">
+        ${r.fotos && r.fotos.length ? `<span><i class="ti ti-camera"></i> ${r.fotos.length} foto${r.fotos.length > 1 ? 's' : ''}</span>` : ''}
+        ${r.geo ? `<span><i class="ti ti-map-pin"></i> ${r.geo.lat.toFixed(4)}, ${r.geo.lng.toFixed(4)}</span>` : ''}
+      </div>
+      ${tagsHTML}
+    </div>`;
+  }).join('');
+}
+
+// ─── DETALLE ──────────────────────────────────────────────
+function verDetalle(id) {
+  const r = state.registros.find(x => x.id === id);
+  if (!r) return;
+  const d = new Date(r.fecha);
+  const fechaStr = d.toLocaleDateString('es-AR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) + ' · ' + d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  
+  let html = '';
+  if (r.fotos && r.fotos.length) {
+    html += r.fotos.map(f => `<img class="modal-img" src="${f}" />`).join('');
+  }
+  html += `<div class="modal-field"><div class="modal-label">Obra</div><div class="modal-value">${r.obraNombre}</div></div>`;
+  html += `<div class="modal-field"><div class="modal-label">Fecha y hora</div><div class="modal-value">${fechaStr}</div></div>`;
+  if (r.geo) {
+    const mapsUrl = `https://maps.google.com/?q=${r.geo.lat},${r.geo.lng}`;
+    html += `<div class="modal-field"><div class="modal-label">Geolocalización</div><div class="modal-value" style="font-family:var(--mono);font-size:12px;">${r.geo.lat.toFixed(6)}, ${r.geo.lng.toFixed(6)}${r.geo.acc ? ' (±'+r.geo.acc+'m)' : ''}<br><a href="${mapsUrl}" style="color:var(--accent2);font-size:11px;">Ver en Google Maps →</a></div></div>`;
+  }
+  if (r.nota) {
+    html += `<div class="modal-field"><div class="modal-label">Nota</div><div class="modal-value" style="white-space:pre-wrap;">${r.nota}</div></div>`;
+  }
+  if (r.tags && r.tags.length) {
+    html += `<div class="modal-field"><div class="modal-label">Categorías</div><div class="log-tags" style="margin-top:4px;">${r.tags.map(t=>`<span class="log-tag">${t}</span>`).join('')}</div></div>`;
+  }
+  html += `<div style="margin-top:12px;"><button class="btn btn-danger" style="width:100%;" onclick="eliminarRegistro('${r.id}')"><i class="ti ti-trash"></i>Eliminar registro</button></div>`;
+
+  document.getElementById('modalTitle').textContent = r.obraNombre;
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function eliminarRegistro(id) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  state.registros = state.registros.filter(r => r.id !== id);
+  saveState();
+  closeModalDirect();
+  renderHistorial();
+  actualizarInforme();
+  toast('Registro eliminado');
+}
+
+function closeModal(e) { if (e.target.id === 'modalOverlay') closeModalDirect(); }
+function closeModalDirect() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+// ─── INFORME ──────────────────────────────────────────────
+function actualizarInforme() {
+  const filtro = document.getElementById('informeObra') ? document.getElementById('informeObra').value : '';
+  const regs = filtro ? state.registros.filter(r => r.obraId === filtro) : state.registros;
+  const fotos = regs.reduce((acc, r) => acc + (r.fotos ? r.fotos.length : 0), 0);
+  const obras = filtro ? 1 : new Set(regs.map(r => r.obraId)).size;
+  let dias = 0;
+  if (regs.length > 1) {
+    const dates = regs.map(r => new Date(r.fecha).getTime());
+    dias = Math.round((Math.max(...dates) - Math.min(...dates)) / 86400000);
+  }
+
+  document.getElementById('statVisitas').textContent = regs.length;
+  document.getElementById('statFotos').textContent = fotos;
+  document.getElementById('statObras').textContent = obras;
+  document.getElementById('statDias').textContent = dias;
+
+  // Cronología
+  const cron = document.getElementById('cronologiaList');
+  if (!regs.length) { cron.innerHTML = '<div style="color:var(--ink3);font-size:12px;text-align:center;padding:20px;">Sin registros</div>'; return; }
+  cron.innerHTML = regs.slice(0, 20).map(r => {
+    const d = new Date(r.fecha);
+    return `<div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--ink3);min-width:60px;padding-top:2px;">${d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'})}<br>${d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</div>
+      <div style="width:1px;background:var(--border);flex-shrink:0;align-self:stretch;margin-top:4px;"></div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:700;color:var(--accent);">${r.obraNombre}</div>
+        ${r.nota ? `<div style="font-size:11px;color:var(--ink2);margin-top:2px;">${r.nota.slice(0,80)}${r.nota.length>80?'…':''}</div>` : ''}
+        <div style="display:flex;gap:6px;margin-top:4px;font-family:var(--mono);font-size:9px;color:var(--ink3);">
+          ${r.fotos&&r.fotos.length?`<span>${r.fotos.length} foto${r.fotos.length>1?'s':''}</span>`:''}
+          ${r.tags&&r.tags.length?`<span>${r.tags.join(', ')}</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── EXPORTAR ─────────────────────────────────────────────
+function exportarJSON() {
+  const filtro = document.getElementById('informeObra').value;
+  const regs = filtro ? state.registros.filter(r => r.obraId === filtro) : state.registros;
+  const obrasFiltro = filtro ? state.obras.filter(o => o.id === filtro) : state.obras;
+  
+  const data = {
+    exportado: new Date().toISOString(),
+    sistema: 'Bitácora de Obra · San Rafael',
+    obras: obrasFiltro,
+    registros: regs.map(r => ({ ...r, fotos: r.fotos ? `[${r.fotos.length} imágenes]` : [] }))
+  };
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'bitacora_obra_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('JSON exportado');
+}
+
+function exportarTexto() {
+  const filtro = document.getElementById('informeObra').value;
+  const regs = filtro ? state.registros.filter(r => r.obraId === filtro) : state.registros;
+  
+  let txt = '══════════════════════════════════════\n';
+  txt += 'BITÁCORA DE OBRA · SAN RAFAEL\n';
+  txt += 'Generado: ' + new Date().toLocaleString('es-AR') + '\n';
+  txt += '══════════════════════════════════════\n\n';
+
+  const obraIds = [...new Set(regs.map(r => r.obraId))];
+  obraIds.forEach(oid => {
+    const obra = state.obras.find(o => o.id === oid);
+    const oRegs = regs.filter(r => r.obraId === oid);
+    if (obra) {
+      txt += `\n▶ OBRA: ${obra.nombre}\n`;
+      txt += `   Tipo: ${obra.tipo}\n`;
+      if (obra.comitente) txt += `   Comitente: ${obra.comitente}\n`;
+      if (obra.expediente) txt += `   Expediente: ${obra.expediente}\n`;
+      txt += `   Total visitas: ${oRegs.length}\n`;
+      txt += '──────────────────────────────────────\n';
+    }
+    oRegs.forEach((r, i) => {
+      const d = new Date(r.fecha);
+      txt += `\n[${i+1}] ${d.toLocaleString('es-AR')}\n`;
+      if (r.geo) txt += `  GPS: ${r.geo.lat.toFixed(6)}, ${r.geo.lng.toFixed(6)}\n`;
+      if (r.fotos && r.fotos.length) txt += `  Fotografías: ${r.fotos.length}\n`;
+      if (r.tags && r.tags.length) txt += `  Categorías: ${r.tags.join(', ')}\n`;
+      if (r.nota) txt += `  Nota:\n  ${r.nota.replace(/\n/g, '\n  ')}\n`;
+    });
+    txt += '\n';
+  });
+
+  const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'bitacora_obra_' + new Date().toISOString().slice(0,10) + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Informe de texto exportado');
+}
+
+// ─── GOOGLE DRIVE INTEGRATION ─────────────────────────────
+const DRIVE_FILENAME = 'bitacora_obra.json';
+const DRIVE_SCOPES   = 'https://www.googleapis.com/auth/drive.file';
+
+let driveState = {
+  configured: false,
+  connected:  false,
+  tokenClient: null,
+  accessToken: null,
+  fileId:      null,
+  apiKey:      null,
+  clientId:    null,
+  folderId:    null
+};
+
+// ── Persistir config de Drive en localStorage (sin token) ──
+function loadDriveConfig() {
+  try {
+    const c = localStorage.getItem('bitacora_drive_config');
+    if (c) {
+      const p = JSON.parse(c);
+      driveState.apiKey   = p.apiKey   || null;
+      driveState.clientId = p.clientId || null;
+      driveState.folderId = p.folderId || null;
+      driveState.fileId   = p.fileId   || null;
+      if (driveState.apiKey && driveState.clientId) {
+        driveState.configured = true;
+        driveUpdateUI('configured');
+      }
+    }
+  } catch(e) {}
+}
+
+function saveDriveConfigLocal() {
+  localStorage.setItem('bitacora_drive_config', JSON.stringify({
+    apiKey:   driveState.apiKey,
+    clientId: driveState.clientId,
+    folderId: driveState.folderId,
+    fileId:   driveState.fileId
+  }));
+}
+
+// ── Config modal ───────────────────────────────────────────
+function openDriveConfig() {
+  if (driveState.apiKey)   document.getElementById('driveApiKey').value   = driveState.apiKey;
+  if (driveState.clientId) document.getElementById('driveClientId').value = driveState.clientId;
+  if (driveState.folderId) document.getElementById('driveFolderId').value = driveState.folderId;
+  document.getElementById('driveModal').classList.add('open');
+}
+function closeDriveModal() {
+  document.getElementById('driveModal').classList.remove('open');
+}
+
+function saveDriveConfig() {
+  const apiKey   = document.getElementById('driveApiKey').value.trim();
+  const clientId = document.getElementById('driveClientId').value.trim();
+  const folderId = document.getElementById('driveFolderId').value.trim();
+  if (!apiKey || !clientId) { toast('Completá API Key y Client ID'); return; }
+  driveState.apiKey   = apiKey;
+  driveState.clientId = clientId;
+  driveState.folderId = folderId || null;
+  driveState.configured = true;
+  saveDriveConfigLocal();
+  closeDriveModal();
+  driveUpdateUI('configured');
+  driveLoadGIS();
+  toast('Configuración guardada — hacé clic en Subir para autorizar');
+}
+
+// ── Cargar librerías de Google ─────────────────────────────
+function driveLoadGIS() {
+  if (window.google && window.google.accounts) { driveInitTokenClient(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://accounts.google.com/gsi/client';
+  s.onload = driveInitTokenClient;
+  document.head.appendChild(s);
+
+  if (!window.gapi) {
+    const g = document.createElement('script');
+    g.src = 'https://apis.google.com/js/api.js';
+    g.onload = () => gapi.load('client', () => {
+      gapi.client.init({ apiKey: driveState.apiKey, discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'] });
+    });
+    document.head.appendChild(g);
+  }
+}
+
+function driveInitTokenClient() {
+  driveState.tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: driveState.clientId,
+    scope: DRIVE_SCOPES,
+    callback: (resp) => {
+      if (resp.error) { driveUpdateUI('error', resp.error); return; }
+      driveState.accessToken = resp.access_token;
+      driveState.connected = true;
+      driveUpdateUI('connected');
+    }
+  });
+}
+
+// ── Auth ───────────────────────────────────────────────────
+function driveEnsureAuth(cb) {
+  if (driveState.accessToken) { cb(); return; }
+  if (!driveState.tokenClient) { driveLoadGIS(); setTimeout(() => driveEnsureAuth(cb), 1000); return; }
+  driveState._pendingCb = cb;
+  driveState.tokenClient.callback = (resp) => {
+    if (resp.error) { driveUpdateUI('error', 'Auth fallida'); return; }
+    driveState.accessToken = resp.access_token;
+    driveState.connected = true;
+    driveUpdateUI('connected');
+    if (driveState._pendingCb) { driveState._pendingCb(); driveState._pendingCb = null; }
+  };
+  driveState.tokenClient.requestAccessToken({ prompt: '' });
+}
+
+// ── Fetch helper con token ─────────────────────────────────
+async function driveApiFetch(url, opts={}) {
+  const headers = { 'Authorization': 'Bearer ' + driveState.accessToken, ...(opts.headers||{}) };
+  const res = await fetch(url, { ...opts, headers });
+  if (res.status === 401) { driveState.accessToken = null; driveState.connected = false; driveUpdateUI('configured'); throw new Error('Token expirado — subí de nuevo para re-autorizar'); }
+  return res;
+}
+
+// ── Buscar archivo existente en Drive ─────────────────────
+async function driveFindFile() {
+  let q = `name='${DRIVE_FILENAME}' and trashed=false`;
+  if (driveState.folderId) q += ` and '${driveState.folderId}' in parents`;
+  const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name,modifiedTime)&key=${driveState.apiKey}`;
+  const res = await driveApiFetch(url);
+  const data = await res.json();
+  return data.files && data.files.length ? data.files[0] : null;
+}
+
+// ── SUBIR a Drive ──────────────────────────────────────────
+async function driveSyncUp() {
+  if (!driveState.configured) { openDriveConfig(); return; }
+  driveUpdateUI('syncing', 'Subiendo...');
+  try {
+    await new Promise(resolve => driveEnsureAuth(resolve));
+    
+    // Preparar payload completo (con fotos en base64)
+    const payload = {
+      exportado: new Date().toISOString(),
+      sistema: 'Bitácora de Obra · San Rafael',
+      version: 2,
+      obras: state.obras,
+      registros: state.registros  // fotos incluidas como base64
+    };
+    const body = JSON.stringify(payload, null, 2);
+    const blob = new Blob([body], { type: 'application/json' });
+
+    // Buscar si ya existe el archivo
+    const existing = await driveFindFile();
+
+    let res;
+    if (existing) {
+      // Actualizar
+      const url = `https://www.googleapis.com/upload/drive/v3/files/${existing.id}?uploadType=media`;
+      res = await driveApiFetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: blob });
+      driveState.fileId = existing.id;
+    } else {
+      // Crear nuevo
+      const meta = { name: DRIVE_FILENAME, mimeType: 'application/json' };
+      if (driveState.folderId) meta.parents = [driveState.folderId];
+      const form = new FormData();
+      form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+      form.append('file', blob);
+      const url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+      res = await driveApiFetch(url, { method: 'POST', body: form });
+      const created = await res.json();
+      driveState.fileId = created.id;
+    }
+
+    saveDriveConfigLocal();
+    const now = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    driveUpdateUI('connected', 'Guardado ' + now);
+    toast('✓ Bitácora guardada en Drive');
+  } catch(e) {
+    driveUpdateUI('error', 'Error al subir');
+    toast('Error Drive: ' + e.message);
+    console.error(e);
+  }
+}
+
+// ── BAJAR de Drive ─────────────────────────────────────────
+async function driveSyncDown() {
+  if (!driveState.configured) { openDriveConfig(); return; }
+  if (!confirm('¿Reemplazar los datos locales con los de Drive?\nEsto sobreescribirá tu bitácora local.')) return;
+  driveUpdateUI('syncing', 'Bajando...');
+  try {
+    await new Promise(resolve => driveEnsureAuth(resolve));
+
+    const file = await driveFindFile();
+    if (!file) { driveUpdateUI('connected'); toast('No se encontró bitacora_obra.json en Drive'); return; }
+
+    const res = await driveApiFetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`);
+    const data = await res.json();
+
+    if (!data.obras || !data.registros) { toast('El archivo de Drive no tiene el formato esperado'); driveUpdateUI('connected'); return; }
+
+    state.obras     = data.obras;
+    state.registros = data.registros;
+    state.currentObra = null;
+    saveState();
+    populateSelects();
+    renderObrasList();
+    renderHistorial();
+    actualizarInforme();
+
+    driveState.fileId = file.id;
+    saveDriveConfigLocal();
+    driveUpdateUI('connected', 'Sincronizado ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+    toast('✓ Bitácora restaurada desde Drive');
+  } catch(e) {
+    driveUpdateUI('error', 'Error al bajar');
+    toast('Error Drive: ' + e.message);
+    console.error(e);
+  }
+}
+
+// ── UI Drive ───────────────────────────────────────────────
+function driveUpdateUI(status, msg) {
+  const dot  = document.getElementById('driveDot');
+  const text = document.getElementById('driveStatusText');
+  const upBtn   = document.getElementById('driveUpBtn');
+  const downBtn = document.getElementById('driveDownBtn');
+  const expBtn  = document.getElementById('driveExportBtn');
+  dot.className = 'drive-status-dot';
+
+  if (status === 'configured') {
+    dot.classList.add('connected');
+    text.textContent = 'Drive configurado — clic en Subir para autorizar';
+    upBtn.disabled   = false;
+    downBtn.disabled = false;
+    if (expBtn) expBtn.disabled = false;
+  } else if (status === 'connected') {
+    dot.classList.add('connected');
+    text.textContent = msg || 'Drive conectado';
+    upBtn.disabled   = false;
+    downBtn.disabled = false;
+    if (expBtn) expBtn.disabled = false;
+  } else if (status === 'syncing') {
+    dot.classList.add('syncing');
+    text.textContent = msg || 'Sincronizando...';
+    upBtn.disabled   = true;
+    downBtn.disabled = true;
+  } else if (status === 'error') {
+    dot.classList.add('error');
+    text.textContent = msg || 'Error de Drive';
+    upBtn.disabled   = false;
+    downBtn.disabled = false;
+  } else {
+    text.textContent = 'Drive no configurado';
+    upBtn.disabled   = true;
+    downBtn.disabled = true;
+    if (expBtn) expBtn.disabled = true;
+  }
+}
+
+// ── Auto-guardar al registrar visita ──────────────────────
+const _originalGuardar = guardarRegistro;
+guardarRegistro = function() {
+  _originalGuardar();
+  if (driveState.connected && driveState.accessToken) {
+    setTimeout(driveSyncUp, 500); // auto-subir tras guardar
+  }
+};
+
+// ── Init Drive ─────────────────────────────────────────────
+loadDriveConfig();
+if (driveState.configured) driveLoadGIS();
+
+// ─── VIEW SWITCH ──────────────────────────────────────────
+function showView(name, tabEl) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  if (tabEl) tabEl.classList.add('active');
+  if (name === 'historial') renderHistorial();
+  if (name === 'obras') renderObrasList();
+  if (name === 'informe') actualizarInforme();
+}
+
+// ─── TOAST ────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</body>
+</html>
